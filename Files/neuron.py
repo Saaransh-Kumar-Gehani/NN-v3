@@ -43,8 +43,9 @@ class Neuron:
                 self.slope: float = 1 - output**2
 
 
-    def save(self):
-        data = json.load(open("Files/neurons.json"))
+    def save(self) -> None:
+        try: data: dict = json.load(open("Files/neurons.json"))
+        except: data: dict = {}
         data[self.name] = {
             "weights": self.weights,
             "bias": self.bias,
@@ -54,3 +55,4 @@ class Neuron:
             "input": self.input,
             "output": self.output
         }
+        json.dump(data, open("Files/neurons.json", "w"), indent=4)

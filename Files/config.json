@@ -1,0 +1,4 @@
+{
+    "layers": [12, 6, 1],
+    "activations": ["linear", "linear", "linear"]
+}
