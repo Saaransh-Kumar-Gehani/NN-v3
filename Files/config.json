@@ -1,4 +1,8 @@
 {
     "layers": [12, 6, 1],
-    "activations": ["linear", "linear", "linear"]
+    "activations": ["linear", "linear", "linear"],
+    "sample_size": 50,
+    "parameter_size": 4,
+    "noise": 0.05,
+    "seed": 32
 }

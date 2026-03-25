@@ -6,6 +6,7 @@ from Files.neuron import Neuron
 class Layers:
     def __init__(self, config: dict, data: dict):
         self.config: dict = config
+        self.data: dict = data
         layers: list[int] = self.config['layers']
         activations: list[str] = self.config['activations']
         
@@ -13,8 +14,8 @@ class Layers:
             [
                 Neuron(
                     name=f"n_{l+1}_{n+1}",
-                    weights=data.get('weights', []),
-                    bias=data.get('bias', 0.0),
+                    weights=self.data.get('weights', []),
+                    bias=self.data.get('bias', 0.0),
                     activation=activations[l]
                 )
                 for n in range(l)

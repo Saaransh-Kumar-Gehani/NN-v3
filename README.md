@@ -1,11 +1,10 @@
 # Project Title - [Neuron Network]
 
 ## Overview
-- This is a project on Neural Network.
-- Version 1 was makeshift Neural Network.
-- Version 2 was clear, well-structured Neural Network but my system got corrupted and hence I lost it.
-- Now this will be my 3rd iteration of Neural Network and this will be pushed to github for safety.
-- This version will also contain changelog.
+- This project implements a neural network from scratch to learn decision-making based on multiple input factors. 
+
+- The model takes four input parameters and predicts whether a certain action (e.g., going out) should be taken or not.
+- It learns patterns from sample data using forward propagation and backpropagation, without relying on external machine learning libraries.
 
 ## Features
 <!-- Current capabilities (update as you build more) -->

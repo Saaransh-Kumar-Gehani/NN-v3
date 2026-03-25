@@ -8,7 +8,7 @@ class Neuron:
     output: float = 0.0
     slope: float = 0.0
     
-    def __init__(self, name: str, weights: list[float] = [], bias: float = 0.0, activation: str = 'linear') -> None:
+    def __init__(self, name: str, weights: list[float] = [], bias: float = 0.0, activation: str = 'linear'):
         self.name: str = name
         self.weights: list[float] = weights
         self.bias: float = bias
