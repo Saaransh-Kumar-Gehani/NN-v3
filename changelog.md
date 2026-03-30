@@ -10,4 +10,10 @@
 
 ## [v3.03] - Trainer Class  |  25/03/26
 - Started `Trainer` Class in `trainer.py`.
-- Created `randominit()` in `utils.py`.
+- Created `randominit()` (now called `init()`) in `utils.py`.
+
+
+## [v3.04] - init(), generate_dataset()  |  30/03/26
+- Created `generate_dataset()` in `utils.py`.
+- Changed `randominit()` to `init()`.
+- Changed code in `init()`.
