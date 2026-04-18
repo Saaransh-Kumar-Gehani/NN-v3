@@ -17,3 +17,7 @@
 - Created `generate_dataset()` in `utils.py`.
 - Changed `randominit()` to `init()`.
 - Changed code in `init()`.
+
+
+## [v3.05] - Trainer Class  |  18/04/26
+- Finished `Trainer` Class in `trainer.py`.

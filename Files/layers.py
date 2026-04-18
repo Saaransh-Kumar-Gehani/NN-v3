@@ -9,13 +9,15 @@ class Layers:
         self.data: dict = data
         layers: list[int] = self.config['layers']
         activations: list[str] = self.config['activations']
+        weights: list[list[list[float]]] = self.data['weights']
+        biases: list[list[float]] = self.data['biases']
         
         self.layers: list[list[Neuron]] = [
             [
                 Neuron(
                     name=f"n_{l+1}_{n+1}",
-                    weights=self.data.get('weights', []),
-                    bias=self.data.get('bias', 0.0),
+                    weights=weights[l][n],
+                    bias=biases[l][n],
                     activation=activations[l]
                 )
                 for n in range(l)

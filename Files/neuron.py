@@ -7,6 +7,8 @@ class Neuron:
     score: float = 0.0
     output: float = 0.0
     slope: float = 0.0
+    delta: float = 0.0
+    _neurons_path: str = "Files/neurons.json"
     
     def __init__(self, name: str, weights: list[float] = [], bias: float = 0.0, activation: str = 'linear'):
         self.name: str = name
@@ -33,19 +35,24 @@ class Neuron:
                 output: float = score
                 self.slope: float = 1.0
             case 'sigmoid':
-                output: float = 1/(1 + math.exp(-score))
-                self.slope: float = output(1 - output)
+                output: float = 1/(1 + math.exp(-5*score))
+                self.slope: float = output*(1 - output)
             case 'relu':
                 output: float = max(0, score)
                 self.slope = math.ceil(min(1, max(0, score)))
             case 'tanh':
                 output: float = math.tanh(score)
                 self.slope: float = 1 - output**2
+                
+        return output
 
 
     def save(self) -> None:
-        try: data: dict = json.load(open("Files/neurons.json"))
-        except: data: dict = {}
+        with open(self.neurons_path) as file:
+            try:
+                data: dict = json.load(file)
+            except:
+                data: dict = {}
         data[self.name] = {
             "weights": self.weights,
             "bias": self.bias,
@@ -55,4 +62,16 @@ class Neuron:
             "input": self.input,
             "output": self.output
         }
-        json.dump(data, open("Files/neurons.json", "w"), indent=4)
+        with open(self.neurons_path, "w") as file:
+            json.dump(data, file, indent=4)
+
+
+    def __setattr__(self, name, value):
+        if name == "_neurons_path":
+            raise AttributeError("Cannot modify _neurons_path from instance.")
+        super().__setattr__(name, value)
+
+
+    @property
+    def neurons_path(self) -> str:
+        return Neuron._neurons_path

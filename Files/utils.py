@@ -65,10 +65,14 @@ def generate_dataset(config: dict, data_path: str) -> tuple[list[list[float]], l
         samples.append(sample)
         actuals.append(actual)
 
-    try: data: dict = json.load(open(data_path))
-    except: data: dict = {}
+    with open(data_path) as file:
+        try:
+            data: dict = json.load(file)
+        except:
+            data: dict = {}
     data["samples"] = samples
     data["actuals"] = actuals
-    json.dump(data, open(data_path, "w"), indent=4)
+    with open(data_path, "w") as file:
+        json.dump(data, file, indent=4)
 
     return samples, actuals
