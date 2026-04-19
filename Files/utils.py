@@ -3,10 +3,16 @@
 import random, math, json
 
 
-def init(config: dict, data_path: str) -> None:
-    seed: int | None = config.get('seed', None)
-    parameter_size: int = config.get('parameter_size') or (print("[WARNING] Parameter size is not given, defaulting to 4."), 4)[1]
-    layers: list[int] = config['layers']
+def init(
+        layers: list[int],
+        seed: int | None = None,
+        parameter_size: int | None = 4,
+        data_path: str = "Files/data.json"
+        ) -> None:
+    
+    if parameter_size is None:
+        print("[WARNING] Parameter size is not given, defaulting to 4.")
+        parameter_size = 4
 
     random.seed(seed)
 
@@ -36,13 +42,19 @@ def init(config: dict, data_path: str) -> None:
 
 
 
-def generate_dataset(config: dict, data_path: str) -> tuple[list[list[float]], list[float]]:
-    seed: int | None = config.get('seed', None)
-    sample_size: int = config.get('sample_size', 10)
-    parameter_size: int = config.get('parameter_size') or (print("[WARNING] Parameter size is not given, defaulting to 4."), 4)[1]
-    noise: float = config.get('noise', 0.0)
+def generate_dataset(
+        seed: int | None = None,
+        parameter_size: int | None = 4,
+        sample_size: int = 10,
+        noise: float = 0.0,
+        data_path: str = "Files/data.json"
+        ) -> tuple[list[list[float]], list[float]]:
 
-    random.seed(seed+1)
+    if parameter_size is None:
+        print("[WARNING] Parameter size is not given, defaulting to 4.")
+        parameter_size = 4
+
+    random.seed(seed)
 
     samples: list[list[float]] = []
     actuals: list[float] = []
@@ -56,11 +68,20 @@ def generate_dataset(config: dict, data_path: str) -> tuple[list[list[float]], l
         sample: list[float] = [weather, free_time, money, energy]
 
         energy_adj = 1.0*energy if energy > 0.0 else 1.5*energy
-        free_time_adj = 0.8*free_time if free_time > -0.1 else 1.5*free_time
+        free_time_adj = 0.8*free_time if free_time > 0.0 else 1.5*free_time
         weather_adj = 0.5*weather if weather > 0.0 else 0.8*weather
         score: float = weather_adj + free_time_adj + 0.1*money + energy_adj
 
-        actual: float = 1 / (1 + math.exp(-5*score))
+        # actual: float = 1 / (1 + math.exp(-score))
+
+#         score = (
+#     0.6 * weather +
+#     0.7 * free_time +
+#     0.2 * money +
+#     0.9 * energy
+# )
+
+        actual = max(0.0, min(1.0, score))
 
         samples.append(sample)
         actuals.append(actual)

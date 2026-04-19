@@ -21,3 +21,11 @@
 
 ## [v3.05] - Trainer Class  |  18/04/26
 - Finished `Trainer` Class in `trainer.py`.
+
+
+## [v3.06] - Final Commit  |  19/04/26
+- Completed `main.py`.
+- Moved `save()` from `neuron.py` to `layers.py`.
+- Added `compute_loss()` function to `Trainer` Class.
+- Changed parameters for `init()` and `generate_dataset()` in `utils.py` and changed some rules to `generate_dataset()`.
+- Created `neurons.json` file in `Files\`.

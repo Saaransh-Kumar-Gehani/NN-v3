@@ -7,9 +7,8 @@ from Files.neuron import Neuron
 
 
 class Trainer:
-    def __init__(self, config: dict, data: dict, layers: Layers, loss: str = 'MSE'):
+    def __init__(self, config: dict, layers: Layers, loss: str = 'MSE'):
         self.config: dict = config
-        self.data: dict = data
         self.layers: Layers | list[list[Neuron]] = layers
         
         if loss.upper() in ['MSE', 'BCE', 'BCEWL']:
@@ -18,11 +17,16 @@ class Trainer:
             raise ValueError(f"The loss function [{loss}] is not supported.")
 
     
-    def train(self, samples: list[list[float]], actuals: list[float]):
+    def train(self, samples: list[list[float]], actuals: list[float]) -> list[float]:
+        losses: list[float] = []
         for sample, actual in zip(samples, actuals):
             self.forward(sample=sample)
 
+            losses.append(self.compute_loss(sample=sample, actual=actual))
+
             self.backprop(actual=actual)
+        
+        return losses
 
     
     def forward(self, sample: list[float]) -> list[float]:
@@ -33,7 +37,7 @@ class Trainer:
         return out
 
 
-    def backprop(self, actual: float):
+    def backprop(self, actual: float) -> None:
         last_layer: list[Neuron] = self.layers[-1]
         for n_next in last_layer:
             n_next.delta = self.compute_delta(layer='output', n=n_next, actual=actual)
@@ -89,22 +93,18 @@ class Trainer:
         return _delta
     
 
-    def compute_losses(self, samples: list[list[float]], actuals: list[float]) -> list[float]:
-        losses: list[float] = []
-        for sample, actual in zip(samples, actuals):
-            out = self.forward(sample=sample)[0]
+    def compute_loss(self, sample: list[float], actual: float) -> float:
+        out = self.forward(sample=sample)[0]
 
-            if self.loss == 'MSE':
-                loss = (out - actual)**2
-            elif self.loss == 'BCE':
-                out = max(min(out, 1 - 1e-15), 1e-15)
-                loss = -(actual * math.log(out) + (1 - actual) * math.log(1 - out))
-            elif self.loss == 'BCEWL':
-                loss = max(out, 0) - out*actual + math.log(1 + math.exp(-abs(out)))
-            else:
-                loss = 0.0
-
-            losses.append(loss)
+        if self.loss == 'MSE':
+            loss = (out - actual)**2
+        elif self.loss == 'BCE':
+            out = max(min(out, 1 - 1e-15), 1e-15)
+            loss = -(actual * math.log(out) + (1 - actual) * math.log(1 - out))
+        elif self.loss == 'BCEWL':
+            loss = max(out, 0) - out*actual + math.log(1 + math.exp(-abs(out)))
+        else:
+            loss = 0.0
         
-        return losses
+        return loss
             

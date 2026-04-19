@@ -1,14 +1,14 @@
 # neuron.py
 
-import math, json
+import math
 
 
 class Neuron:
+    input: list[float] = [0.0]
     score: float = 0.0
     output: float = 0.0
     slope: float = 0.0
     delta: float = 0.0
-    _neurons_path: str = "Files/neurons.json"
     
     def __init__(self, name: str, weights: list[float] = [], bias: float = 0.0, activation: str = 'linear'):
         self.name: str = name
@@ -45,33 +45,3 @@ class Neuron:
                 self.slope: float = 1 - output**2
                 
         return output
-
-
-    def save(self) -> None:
-        with open(self.neurons_path) as file:
-            try:
-                data: dict = json.load(file)
-            except:
-                data: dict = {}
-        data[self.name] = {
-            "weights": self.weights,
-            "bias": self.bias,
-            "score": self.score,
-            "activation": self.activation,
-            "slope": self.slope,
-            "input": self.input,
-            "output": self.output
-        }
-        with open(self.neurons_path, "w") as file:
-            json.dump(data, file, indent=4)
-
-
-    def __setattr__(self, name, value):
-        if name == "_neurons_path":
-            raise AttributeError("Cannot modify _neurons_path from instance.")
-        super().__setattr__(name, value)
-
-
-    @property
-    def neurons_path(self) -> str:
-        return Neuron._neurons_path
