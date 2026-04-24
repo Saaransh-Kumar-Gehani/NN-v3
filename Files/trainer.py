@@ -11,13 +11,13 @@ class Trainer:
         self.config: dict = config
         self.layers: Layers | list[list[Neuron]] = layers
         
-        if loss.upper() in ['MSE', 'BCE', 'BCEWL']:
+        if loss.upper() in ['MSE', 'BCE', 'BCEWL', 'CCE']:
             self.loss: str = loss.upper()
         else:
             raise ValueError(f"The loss function [{loss}] is not supported.")
 
     
-    def train(self, samples: list[list[float]], actuals: list[float]) -> list[float]:
+    def train(self, samples: list[list[float]], actuals: list[list[float]]) -> list[float]:
         losses: list[float] = []
         for sample, actual in zip(samples, actuals):
             self.forward(sample=sample)
@@ -33,14 +33,22 @@ class Trainer:
         out = sample
         for layer in self.layers:
             out = [n.predict(out) for n in layer]
-        
+
+        if self.config['softmax']:
+            max_logit = max(out)
+            exps = [math.exp(z - max_logit) for z in out]
+            sum_exps = sum(exps)
+            out = [e / sum_exps for e in exps]
+        for i, n in enumerate(self.layers[-1]):
+            n.output = out[i]
+
         return out
 
 
-    def backprop(self, actual: float) -> None:
+    def backprop(self, actual: list[float]) -> None:
         last_layer: list[Neuron] = self.layers[-1]
-        for n_next in last_layer:
-            n_next.delta = self.compute_delta(layer='output', n=n_next, actual=actual)
+        for n_i, n_next in enumerate(last_layer):
+            n_next.delta = self.compute_delta(layer='output', n=n_next, actual=actual[n_i])
         
         for i in range(len(self.layers)-2, 0, -1):
             next_layer: list[Neuron] = self.layers[i]
@@ -89,22 +97,38 @@ class Trainer:
                     _delta: float = (delta) * n.slope
                 else:
                     raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
+                
+            case 'CCE':
+                if self.config['activations'][-1] != 'linear':
+                    print("<=> [CCE] is applied with non-linear output layer.")
+                if self.config['softmax'] is False:
+                    print("<=> [CCE] is applied with non-softmax output layer.")
+                if layer == 'output':
+                    _delta: float = (n.output - actual)
+                elif layer == 'hidden':
+                    _delta: float = (delta) * n.slope
+                else:
+                    raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
 
         return _delta
     
 
-    def compute_loss(self, sample: list[float], actual: float) -> float:
-        out = self.forward(sample=sample)[0]
+    def compute_loss(self, sample: list[float], actual: list[float]) -> float:
+        outs = self.forward(sample=sample)
 
-        if self.loss == 'MSE':
-            loss = (out - actual)**2
-        elif self.loss == 'BCE':
-            out = max(min(out, 1 - 1e-15), 1e-15)
-            loss = -(actual * math.log(out) + (1 - actual) * math.log(1 - out))
-        elif self.loss == 'BCEWL':
-            loss = max(out, 0) - out*actual + math.log(1 + math.exp(-abs(out)))
-        else:
-            loss = 0.0
+        loss: float = 0.0
+        for out, act in zip(outs, actual):
+            if self.loss == 'MSE':
+                loss += (out - act)**2
+            elif self.loss == 'BCE':
+                out = max(min(out, 1 - 1e-15), 1e-15)
+                loss += -(act * math.log(out) + (1 - act) * math.log(1 - out))
+            elif self.loss == 'BCEWL':
+                loss += max(out, 0) - out*act + math.log(1 + math.exp(-abs(out)))
+            elif self.loss == 'CCE':
+                if act == 0.9:
+                    out = max(min(out, 1 - 1e-15), 1e-15)
+                    loss += -math.log(out)
         
         return loss
             
