@@ -1,6 +1,7 @@
 # main.py
 
 import json
+import random
 import time
 
 from Files.layers import Layers
@@ -52,7 +53,14 @@ wrong = 0
 for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10)):
     outs = trainer.forward(sample=sample)
 
-    print("Sample: ", sample, "  ->  ", outs, " (Predicted)  |  ", actual, " (Actual)")
+    # print("Sample: ", sample, "  ->  ", outs, " (Predicted)  |  ", actual, " (Actual)")
+    r = random.random()
+    s = 0
+    for prob in outs:
+        s+=prob
+        if r<s:
+            print("Sample: ", sample, "  ->  ", [0, 1, 2, 3, 4][outs.index(prob)], " (Predicted)  |  ", [0, 1, 2, 3, 4][actual.index(max(actual))], " (Actual)")
+            break
     # if not ((out>0.5) ^ (actual>0.5)):
     #     correct += 1
     # else:

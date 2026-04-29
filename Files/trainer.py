@@ -50,7 +50,7 @@ class Trainer:
         for n_i, n_next in enumerate(last_layer):
             n_next.delta = self.compute_delta(layer='output', n=n_next, actual=actual[n_i])
         
-        for i in range(len(self.layers)-2, 0, -1):
+        for i in range(len(self.layers)-1, 0, -1):
             next_layer: list[Neuron] = self.layers[i]
             prev_layer: list[Neuron] = self.layers[i-1]
             
@@ -126,9 +126,8 @@ class Trainer:
             elif self.loss == 'BCEWL':
                 loss += max(out, 0) - out*act + math.log(1 + math.exp(-abs(out)))
             elif self.loss == 'CCE':
-                if act == 0.9:
-                    out = max(min(out, 1 - 1e-15), 1e-15)
-                    loss += -math.log(out)
+                out = max(min(out, 1 - 1e-15), 1e-15)
+                loss += -act * math.log(out)
         
         return loss
             

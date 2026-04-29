@@ -62,12 +62,23 @@ def generate_dataset(
     for _ in range(sample_size):
         # RULE
 
-        num, *_ = [random.uniform(0, 1) for _ in range(parameter_size)]
+        num, *_ = [random.random() for _ in range(parameter_size)]
 
         sample: list[float] = [num]
+        
+        # i = int(num * 5)
+        # actual = [(1.0 if j == i else 0.0) for j in range(5)]
 
-        i = int(num * 5)
-        actual = [(0.9 if j == i else 0.025) for j in range(5)]
+        center = num * 5 + 0.5
+
+        actual = []
+        for j in range(5):
+            val = math.exp(-(j - center)**2 / 2)   # gaussian
+            actual.append(val)
+
+        # normalize
+        s = sum(actual)
+        actual = [v/s for v in actual]
 
         samples.append(sample)
         actuals.append(actual)
