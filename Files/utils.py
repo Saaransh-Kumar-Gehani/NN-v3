@@ -48,7 +48,7 @@ def generate_dataset(
         sample_size: int = 10,
         noise: float = 0.0,
         data_path: str = "Files/data.json"
-        ) -> tuple[list[list[float]], list[float]]:
+        ) -> tuple[list[list[float]], list[list[float]]]:
 
     if parameter_size is None:
         print("[WARNING] Parameter size is not given, defaulting to 4.")
@@ -57,7 +57,7 @@ def generate_dataset(
     random.seed(seed)
 
     samples: list[list[float]] = []
-    actuals: list[float] = []
+    actuals: list[list[float]] = []
 
     for _ in range(sample_size):
         # RULE
@@ -81,7 +81,7 @@ def generate_dataset(
 #     0.9 * energy
 # )
 
-        actual = max(0.0, min(1.0, score))
+        actual: list[float] = [max(0.0, min(1.0, score))]
 
         samples.append(sample)
         actuals.append(actual)

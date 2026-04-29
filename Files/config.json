@@ -1,6 +1,7 @@
 {
     "layers": [12, 6, 1],
     "activations": ["relu", "relu", "sigmoid"],
+    "softmax": false,
     "loss": "BCE",
     "epoch_size": 200,
     "sample_size": 50,

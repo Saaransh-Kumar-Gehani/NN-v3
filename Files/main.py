@@ -50,11 +50,12 @@ print("Losses: ", [epoch_losses[i] for i in range(len(epoch_losses)) if (i+1)%10
 correct = 0
 wrong = 0
 for sample, actual in zip(*generate_dataset(parameter_size=4, sample_size=10000)):
-    out = trainer.forward(sample=sample)[0]
-    if not ((out>0.5) ^ (actual>0.5)):
-        correct += 1
-    else:
-        wrong += 1
-    # print("Sample: ", sample, "  ->  ", out, " (Predicted)  |  ", actual, " (Actual)")
+    outs = trainer.forward(sample=sample)
+    for out, act in zip(outs, actual):
+        if not ((out>0.5) ^ (act>0.5)):
+            correct += 1
+        else:
+            wrong += 1
+        # print("Sample: ", sample, "  ->  ", out, " (Predicted)  |  ", act, " (Actual)")
 
 print("Correct: ", correct, "Wrong: ", wrong)
