@@ -1,0 +1,13 @@
+{
+    "layers": [1, 10, 5],
+    "activations": ["linear", "tanh", "linear"],
+    "softmax": true,
+    "loss": "CCE",
+    "epoch_size": 1000,
+    "sample_size": 100,
+    "parameter_size": 1,
+    "noise": 0.05,
+    "lr": 0.01,
+    "decay": 0.00,
+    "seed": 32
+}

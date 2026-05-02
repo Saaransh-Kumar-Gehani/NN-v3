@@ -1,13 +1,14 @@
 # layers.py
 
-import json
+import json, os
 
-from Files.neuron import Neuron
+from Files.core.neuron import Neuron
 
 
 class Layers:
-    _neurons_path: str = "Files/neurons.json"
-    _model_path: str = "Files/model.json"
+    _BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
+    _neurons_path: str = os.path.join(_BASE_DIR, "neurons.json")
+    _model_path: str = os.path.join(_BASE_DIR, "model.json")
     
     def __init__(self, config: dict, data: dict):
         self.config: dict = config

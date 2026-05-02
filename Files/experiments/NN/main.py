@@ -1,17 +1,18 @@
 # main.py
 
-import json
-import time
+import json, time, os
 
-from Files.layers import Layers
-from Files.trainer import Trainer
-from Files.utils import init, generate_dataset
+from Files.core.layers import Layers
+from Files.core.trainer import Trainer
+from Files.core.utils import init
+from Files.experiments.NN.utils import generate_dataset
 
 
-config_path: str = "Files/config.json"
-data_path: str = "Files/data.json"
-neurons_path: str = "Files/neurons.json"
-model_path: str = "Files/model.json"
+BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
+config_path: str = os.path.join(BASE_DIR, "config.json")
+data_path: str = os.path.join(BASE_DIR, "data.json")
+neurons_path: str = os.path.join(BASE_DIR, "neurons.json")
+model_path: str = os.path.join(BASE_DIR, "model.json")
 
 # Creating all necessary files to prevent FileNotFoundError
 open(config_path, "a").close()
@@ -53,7 +54,7 @@ print("Losses: ", [epoch_losses[i] for i in range(len(epoch_losses)) if (i+1)%10
 
 correct = 0
 wrong = 0
-for sample, actual in zip(*generate_dataset(parameter_size=4, sample_size=10000)):
+for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000)):
     outs = trainer.forward(sample=sample)
     for out, act in zip(outs, actual):
         if not ((out>0.5) ^ (act>0.5)):

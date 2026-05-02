@@ -1,15 +1,15 @@
 # test.py
 
-import json
-import random
+import json, os
 
-from Files.layers import Layers
-from Files.trainer import Trainer
-from Files.utils import generate_dataset
+from Files.core.layers import Layers
+from Files.core.trainer import Trainer
+from Files.experiments.NN.utils import generate_dataset
 
 
-config_path: str = "Files/config.json"
-model_path: str = "Files/model.json"
+BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
+config_path: str = os.path.join(BASE_DIR, "config.json")
+model_path: str = os.path.join(BASE_DIR, "model.json")
 
 # Creating all necessary files to prevent FileNotFoundError
 open(config_path, "a").close()
@@ -31,7 +31,7 @@ trainer = Trainer(config=config, layers=layers, loss=config['loss'])
 
 correct = 0
 wrong = 0
-for sample, actual in zip(*generate_dataset(parameter_size=4, sample_size=10000)):
+for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000)):
     outs = trainer.forward(sample=sample)
     for out, act in zip(outs, actual):
         if not ((out>0.5) ^ (act>0.5)):

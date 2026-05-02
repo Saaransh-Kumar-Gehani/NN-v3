@@ -2,8 +2,8 @@
 
 import math
 
-from Files.layers import Layers
-from Files.neuron import Neuron
+from Files.core.layers import Layers
+from Files.core.neuron import Neuron
 
 
 class Trainer:
@@ -11,7 +11,7 @@ class Trainer:
         self.config: dict = config
         self.layers: Layers | list[list[Neuron]] = layers
         
-        if loss.upper() in ['MSE', 'BCE', 'BCEWL']:
+        if loss.upper() in ['MSE', 'BCE', 'BCEWL', 'CCE']:
             self.loss: str = loss.upper()
         else:
             raise ValueError(f"The loss function [{loss}] is not supported.")
@@ -33,7 +33,7 @@ class Trainer:
         out = sample
         for layer in self.layers:
             out = [n.predict(out) for n in layer]
-        
+
         if self.config['softmax']:
             max_logit = max(out)
             exps = [math.exp(z - max_logit) for z in out]
@@ -41,7 +41,7 @@ class Trainer:
             out = [e / sum_exps for e in exps]
         for i, n in enumerate(self.layers[-1]):
             n.output = out[i]
-        
+
         return out
 
 
@@ -97,6 +97,18 @@ class Trainer:
                     _delta: float = (delta) * n.slope
                 else:
                     raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
+                
+            case 'CCE':
+                if self.config['activations'][-1] != 'linear':
+                    print("<=> [CCE] is applied with non-linear output layer.")
+                if self.config['softmax'] is False:
+                    print("<=> [CCE] is applied with non-softmax output layer.")
+                if layer == 'output':
+                    _delta: float = (n.output - actual)
+                elif layer == 'hidden':
+                    _delta: float = (delta) * n.slope
+                else:
+                    raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
 
         return _delta
     
@@ -113,6 +125,9 @@ class Trainer:
                 loss += -(act * math.log(out) + (1 - act) * math.log(1 - out))
             elif self.loss == 'BCEWL':
                 loss += max(out, 0) - out*act + math.log(1 + math.exp(-abs(out)))
+            elif self.loss == 'CCE':
+                out = max(min(out, 1 - 1e-15), 1e-15)
+                loss += -act * math.log(out)
         
         return loss
             
