@@ -29,3 +29,8 @@
 - Added `compute_loss()` function to `Trainer` Class.
 - Changed parameters for `init()` and `generate_dataset()` in `utils.py` and changed some rules to `generate_dataset()`.
 - Created `neurons.json` file in `Files\`.
+
+
+## [v3.07] - Test.py  |  02/05/26
+- Added `test.py`.
+- Created `model.json` file in `Files\`.
