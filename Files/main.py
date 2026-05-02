@@ -11,11 +11,13 @@ from Files.utils import init, generate_dataset
 config_path: str = "Files/config.json"
 data_path: str = "Files/data.json"
 neurons_path: str = "Files/neurons.json"
+model_path: str = "Files/model.json"
 
 # Creating all necessary files to prevent FileNotFoundError
 open(config_path, "a").close()
 open(data_path, "a").close()
 open(neurons_path, "a").close()
+open(model_path, "a").close()
 
 
 with open(config_path) as config_file:
@@ -31,6 +33,8 @@ with open(data_path) as data_file:
 
 
 layers = Layers(config=config, data=data)
+layers._neurons_path = neurons_path
+layers._model_path = model_path
 
 trainer = Trainer(config=config, layers=layers, loss=config['loss'])
 

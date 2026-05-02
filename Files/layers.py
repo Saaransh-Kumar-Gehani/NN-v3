@@ -7,6 +7,7 @@ from Files.neuron import Neuron
 
 class Layers:
     _neurons_path: str = "Files/neurons.json"
+    _model_path: str = "Files/model.json"
     
     def __init__(self, config: dict, data: dict):
         self.config: dict = config
@@ -32,20 +33,34 @@ class Layers:
     
     def save(self) -> None:
         data: dict = {}
-        for layer in self.layers:
-            for n in layer:
-                data[n.name] = {
-                    "weights": n.weights,
-                    "bias": n.bias,
-                    "score": n.score,
-                    "activation": n.activation,
-                    "slope": n.slope,
-                    "delta": n.delta,
-                    "input": n.input,
-                    "output": n.output
+        weights: list[list[list[float]]] = []
+        biases: list[list[float]] = []
+        for l, layer in enumerate(self.layers):
+            layer_w: list = []
+            layer_b: list = []
+            for n, neuron in enumerate(layer):
+                layer_w.append(neuron.weights)
+                layer_b.append(neuron.bias)
+                data[neuron.name] = {
+                    "weights": neuron.weights,
+                    "bias": neuron.bias,
+                    "score": neuron.score,
+                    "activation": neuron.activation,
+                    "slope": neuron.slope,
+                    "delta": neuron.delta,
+                    "input": neuron.input,
+                    "output": neuron.output
                 }
+            weights.append(layer_w)
+            biases.append(layer_b)
+        data2: dict = {
+            "weights": weights,
+            "biases": biases
+        }
         with open(self._neurons_path, "w") as file:
             json.dump(data, file, indent=4)
+        with open(self._model_path, "w") as file:
+            json.dump(data2, file, indent=4)
 
     
     def __iter__(self):
