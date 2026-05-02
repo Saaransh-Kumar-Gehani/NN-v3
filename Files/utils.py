@@ -47,7 +47,7 @@ def generate_dataset(
         parameter_size: int | None = 4,
         sample_size: int = 10,
         noise: float = 0.0,
-        data_path: str = "Files/data.json"
+        data_path: str | None = None
         ) -> tuple[list[list[float]], list[list[float]]]:
 
     if parameter_size is None:
@@ -86,14 +86,15 @@ def generate_dataset(
         samples.append(sample)
         actuals.append(actual)
 
-    with open(data_path) as file:
-        try:
-            data: dict = json.load(file)
-        except:
-            data: dict = {}
-    data["samples"] = samples
-    data["actuals"] = actuals
-    with open(data_path, "w") as file:
-        json.dump(data, file, indent=4)
+    if data_path is not None:
+        with open(data_path) as file:
+            try:
+                data: dict = json.load(file)
+            except:
+                data: dict = {}
+        data["samples"] = samples
+        data["actuals"] = actuals
+        with open(data_path, "w") as file:
+            json.dump(data, file, indent=4)
 
     return samples, actuals
