@@ -31,20 +31,13 @@ trainer = Trainer(config=config, layers=layers, loss=config['loss'])
 
 correct = 0
 wrong = 0
-for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10)):
+for sample, actual in zip(*generate_dataset(parameter_size=4, sample_size=10000)):
     outs = trainer.forward(sample=sample)
+    for out, act in zip(outs, actual):
+        if not ((out>0.5) ^ (act>0.5)):
+            correct += 1
+        else:
+            wrong += 1
+        # print("Sample: ", sample, "  ->  ", out, " (Predicted)  |  ", act, " (Actual)")
 
-    # print("Sample: ", sample, "  ->  ", outs, " (Predicted)  |  ", actual, " (Actual)")
-    r = random.random()
-    s = 0
-    for prob in outs:
-        s+=prob
-        if r<s:
-            print("Sample: ", sample, "  ->  ", [0, 1, 2, 3, 4][outs.index(prob)], " (Predicted)  |  ", [0, 1, 2, 3, 4][actual.index(max(actual))], " (Actual)")
-            break
-    # if not ((out>0.5) ^ (actual>0.5)):
-    #     correct += 1
-    # else:
-    #     wrong += 1
-
-# print("Correct: ", correct, "Wrong: ", wrong)
+print("Correct: ", correct, "Wrong: ", wrong)
