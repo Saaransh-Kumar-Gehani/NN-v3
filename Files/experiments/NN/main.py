@@ -33,11 +33,11 @@ with open(data_path) as data_file:
     except json.decoder.JSONDecodeError: raise ValueError("Data File is empty.")
 
 
-layers = Layers(config=config, data=data)
+layers = Layers(layers=config['layers'], activations=config['activations'], data=data)
 layers._neurons_path = neurons_path
 layers._model_path = model_path
 
-trainer = Trainer(config=config, layers=layers, loss=config['loss'])
+trainer = Trainer(layers=layers, activations=config['activations'], lr=config['lr'], decay=config['decay'], softmax=config['softmax'], loss=config['loss'])
 
 t1 = time.time()
 epoch_losses: list[float] = []
@@ -54,7 +54,7 @@ print("Losses: ", [epoch_losses[i] for i in range(len(epoch_losses)) if (i+1)%10
 
 correct = 0
 wrong = 0
-for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000)):
+for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000, noise=0.5)):
     outs = trainer.forward(sample=sample)
     for out, act in zip(outs, actual):
         if not ((out>0.5) ^ (act>0.5)):

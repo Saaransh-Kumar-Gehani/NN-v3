@@ -15,7 +15,7 @@ class Neuron:
         self.weights: list[float] = weights
         self.bias: float = bias
 
-        if activation.lower() in ['linear', 'sigmoid', 'relu', 'tanh']:
+        if activation.lower() in ['linear', 'sigmoid', 'relu', 'lrelu', 'tanh']:
             self.activation: str = activation.lower()
         else:
             raise ValueError(f"The activation function [{activation}] is not supported.")
@@ -35,11 +35,14 @@ class Neuron:
                 output: float = score
                 self.slope: float = 1.0
             case 'sigmoid':
-                output: float = 1/(1 + math.exp(-5*score))
+                output: float = 1/(1 + math.exp(-score))
                 self.slope: float = output*(1 - output)
             case 'relu':
                 output: float = max(0, score)
-                self.slope: float = math.ceil(min(1, max(0, score)))
+                self.slope: float = 1 if score > 0 else 0
+            case 'lrelu':
+                output: float = max(0.01*score, score)
+                self.slope: float = 1 if score > 0 else 0.01
             case 'tanh':
                 output: float = math.tanh(score)
                 self.slope: float = 1 - output**2

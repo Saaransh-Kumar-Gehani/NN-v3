@@ -10,11 +10,13 @@ class Layers:
     _neurons_path: str = os.path.join(_BASE_DIR, "neurons.json")
     _model_path: str = os.path.join(_BASE_DIR, "model.json")
     
-    def __init__(self, config: dict, data: dict):
-        self.config: dict = config
+    def __init__(
+            self,
+            layers: list[int],
+            activations: list[str],
+            data: dict
+        ):
         self.data: dict = data
-        layers: list[int] = self.config['layers']
-        activations: list[str] = self.config['activations']
         weights: list[list[list[float]]] = self.data['weights']
         biases: list[list[float]] = self.data['biases']
         

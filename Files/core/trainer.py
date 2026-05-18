@@ -7,9 +7,20 @@ from Files.core.neuron import Neuron
 
 
 class Trainer:
-    def __init__(self, config: dict, layers: Layers, loss: str = 'MSE'):
-        self.config: dict = config
+    def __init__(
+            self,
+            layers: Layers,
+            activations: list[str],
+            lr: float = 0.01,
+            decay: float = 0.01,
+            softmax: bool = False,
+            loss: str = 'MSE'
+        ):
         self.layers: Layers | list[list[Neuron]] = layers
+        self.activations: list[str] = activations
+        self.lr: float = lr
+        self.decay: float = decay
+        self.softmax: bool = softmax
         
         if loss.upper() in ['MSE', 'BCE', 'BCEWL', 'CCE']:
             self.loss: str = loss.upper()
@@ -34,7 +45,7 @@ class Trainer:
         for layer in self.layers:
             out = [n.predict(out) for n in layer]
 
-        if self.config['softmax']:
+        if self.softmax:
             max_logit = max(out)
             exps = [math.exp(z - max_logit) for z in out]
             sum_exps = sum(exps)
@@ -63,9 +74,9 @@ class Trainer:
         for layer in self.layers:
             for n in layer:
                 for w in range(len(n.weights)):
-                    n.weights[w] -= self.config['lr'] * (n.delta * n.input[w] + self.config['decay'] * n.weights[w])
+                    n.weights[w] -= self.lr * (n.delta * n.input[w] + self.decay * n.weights[w])
                 
-                n.bias -= self.config['lr'] * (n.delta)
+                n.bias -= self.lr * (n.delta)
 
 
     def compute_delta(self, layer: str, n: Neuron, actual: float = 0.0, delta: float = 0.0) -> float:
@@ -79,7 +90,7 @@ class Trainer:
                     raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
                 
             case 'BCE':
-                if self.config['activations'][-1] != 'sigmoid':
+                if self.activations[-1] != 'sigmoid':
                     print("<=> [BCE] is applied with non-sigmoid output layer.")
                 if layer == 'output':
                     _delta: float = (n.output - actual)
@@ -89,7 +100,7 @@ class Trainer:
                     raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
                 
             case 'BCEWL':
-                if self.config['activations'][-1] != 'linear':
+                if self.activations[-1] != 'linear':
                     print("<=> [BCEWL] is applied with non-linear output layer.")
                 if layer == 'output':
                     _delta: float = ((1/(1 + math.exp(-5*n.output))) - actual)
@@ -99,9 +110,9 @@ class Trainer:
                     raise SyntaxError("Incorrect layer parameter in `compute_delta()`.")
                 
             case 'CCE':
-                if self.config['activations'][-1] != 'linear':
+                if self.activations[-1] != 'linear':
                     print("<=> [CCE] is applied with non-linear output layer.")
-                if self.config['softmax'] is False:
+                if self.softmax is False:
                     print("<=> [CCE] is applied with non-softmax output layer.")
                 if layer == 'output':
                     _delta: float = (n.output - actual)

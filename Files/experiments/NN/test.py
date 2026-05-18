@@ -25,13 +25,14 @@ with open(model_path) as model_file:
     except json.decoder.JSONDecodeError: raise ValueError("Model File is empty.")
 
 
-layers = Layers(config=config, data=model)
+layers = Layers(layers=config['layers'], activations=config['activations'], data=model)
 
-trainer = Trainer(config=config, layers=layers, loss=config['loss'])
+trainer = Trainer(layers=layers, activations=config['activations'], lr=config['lr'], decay=config['decay'], softmax=config['softmax'], loss=config['loss'])
 
 correct = 0
 wrong = 0
-for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000)):
+losses = []
+for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_size'], sample_size=10000, noise=0.5)):
     outs = trainer.forward(sample=sample)
     for out, act in zip(outs, actual):
         if not ((out>0.5) ^ (act>0.5)):
@@ -39,5 +40,8 @@ for sample, actual in zip(*generate_dataset(parameter_size=config['parameter_siz
         else:
             wrong += 1
         # print("Sample: ", sample, "  ->  ", out, " (Predicted)  |  ", act, " (Actual)")
+    if (correct + wrong) % 1000 == 0:
+        losses.append(trainer.compute_loss(sample=sample, actual=actual))
 
+print("Losses: ", losses)
 print("Correct: ", correct, "Wrong: ", wrong)

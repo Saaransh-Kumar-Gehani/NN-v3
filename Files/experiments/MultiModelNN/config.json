@@ -1,0 +1,14 @@
+{
+    "NN": [2, 1],
+    "layers": [[[2, 4, 1], [2, 4, 1]], [[2, 4, 4]]],
+    "activations": [[["lrelu", "lrelu", "linear"], ["lrelu", "lrelu", "linear"]], [["tanh", "tanh", "linear"]]],
+    "softmax": [[false, false], [true]],
+    "loss": [["MSE", "MSE"], ["CCE"]],
+    "epoch_size": 100,
+    "sample_size": 1000,
+    "parameter_size": 2,
+    "noise": 0.05,
+    "lr": 0.01,
+    "decay": 0.01,
+    "seed": 32
+}

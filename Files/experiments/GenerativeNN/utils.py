@@ -23,14 +23,14 @@ def generate_dataset(
     for _ in range(sample_size):
         # RULE
 
-        num, *_ = [random.random() for _ in range(parameter_size)]
+        num, *_ = [random.uniform(-0.5, 4.5) for _ in range(parameter_size)]
 
         sample: list[float] = [num]
         
         # i = int(num * 5)
         # actual = [(1.0 if j == i else 0.0) for j in range(5)]
 
-        center = num * 5 + 0.5
+        center = num
 
         actual = []
         for j in range(5):

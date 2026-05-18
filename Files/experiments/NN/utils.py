@@ -31,7 +31,7 @@ def generate_dataset(
         energy_adj = 1.0*energy if energy > 0.0 else 1.5*energy
         free_time_adj = 0.8*free_time if free_time > 0.0 else 1.5*free_time
         weather_adj = 0.5*weather if weather > 0.0 else 0.8*weather
-        score: float = weather_adj + free_time_adj + 0.1*money + energy_adj
+        score: float = weather_adj + free_time_adj + 0.1*money + energy_adj + random.uniform(-noise, noise)
 
         # actual: float = 1 / (1 + math.exp(-score))
 
