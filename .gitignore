@@ -1,0 +1,13 @@
+*
+
+!config.json
+!data.json
+!model.json
+!main.py
+!nn.py
+!neuron.py
+!layers.py
+!trainer.py
+!utils.py
+!output.txt
+!.gitignore

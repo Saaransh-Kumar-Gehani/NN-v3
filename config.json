@@ -1,0 +1,12 @@
+{
+    "layers": [2, 4, 1],
+    "activations": ["linear", "tanh", "sigmoid"],
+    "softmax": false,
+    "sample_size": 100,
+    "epoch_size": 100,
+    "parameter_size": 2,
+    "seed": null,
+    "loss": "BCE",
+    "decay": 0.0,
+    "lr": 0.1
+}
