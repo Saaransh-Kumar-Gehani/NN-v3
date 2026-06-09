@@ -1,6 +1,7 @@
 # utils.py
 
 import json
+import math
 import random
 
 
@@ -35,14 +36,17 @@ def generate_dataset(data_path: str | None = None, seed: int | None = None, samp
     samples: list[list[float]] = []
     actuals: list[list[float]] = []
 
-    for _ in range(sample_size):
-        x: int = random.randint(0, 1)
-        y: int = random.randint(0, 1)
+    for i in range(sample_size):
+        # x: int = random.uniform(-1, 1)
+        # y: int = random.uniform(-1, 1)
+        # z: int = random.uniform(-1, 1)
 
-        sample: list[float] = [x, y]
+        
+        sample: list[float] = [int(bit) for bit in format(i%256, '08b')]
+
         
         # XOR
-        actual: list[float] = [int(not (x == y))]
+        # actual: list[float] = [int(not (x == y))]
         # AND
         # actual: list[float] = [int(x and y)]
         # OR
@@ -51,10 +55,12 @@ def generate_dataset(data_path: str | None = None, seed: int | None = None, samp
         # actual: list[float] = [int(not (x and y))]
         # NXOR
         # actual: list[float] = [int(x == y)]
-
+        # Parity
+        actual: list[float] = [1 if sample.count(1)%2 else 0]
 
         samples.append(sample)
         actuals.append(actual)
+
 
     if data_path is not None:
         with open(data_path) as file:
