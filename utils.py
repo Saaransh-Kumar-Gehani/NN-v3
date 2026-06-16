@@ -66,8 +66,11 @@ def generate_dataset(data_path: str | None = None, seed: int | None = None, samp
         with open(data_path) as file:
             data = json.load(file)
         with open(data_path, 'w') as file:
-            data["samples"] = samples
-            data["actuals"] = actuals
+            try: data["samples"].append(samples)
+            except: data["samples"] = samples
+            try: data["actuals"].append(actuals)
+            except: data["actuals"] = actuals
+            
             json.dump(data, file, indent=4)
 
     return (samples, actuals)

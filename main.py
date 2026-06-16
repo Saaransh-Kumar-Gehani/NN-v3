@@ -12,7 +12,6 @@ data_path: str = "NN-TESTING2/data.json"
 file = open("NN-TESTING2/output.txt", 'w')
 for _ in range(1):
     nn1 = NN(config_path=config_path, data_path=data_path)
-    nn1.make_dataset()
     t1 = time.time()
     nn1.train()
     t2 = time.time()

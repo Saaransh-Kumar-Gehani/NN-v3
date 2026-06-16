@@ -28,15 +28,16 @@ class Trainer:
         
     
     def train(self, samples: list[list[float]], actuals: list[list[float]]) -> float:
+        losses: list[float] = []
         for sample, actual in zip(samples, actuals):
             self.forward(sample=sample)
 
+            loss: float = self.compute_loss(sample=sample, actual=actual)
+            losses.append(loss)
+
             self.backward(actual=actual)
 
-        i = random.choice(range(len(samples)))
-        loss: float = self.compute_loss(sample=samples[i], actual=actuals[i])
-
-        return loss
+        return sum(losses)/len(losses)
 
         
     def forward(self, sample: list[float]) -> list[float]:
