@@ -8,6 +8,7 @@ class Neuron:
     slope: float = 0.0
     output: float = 0.0
     delta: float = 0.0
+    softmax: float = 0.0
 
     def __init__ (self, name: str, weight: list[float], bias: float, activation: str = 'linear'):
         self.name: str = name

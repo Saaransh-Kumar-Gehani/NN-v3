@@ -35,7 +35,7 @@ class Layers:
         return iter(self.layers)
     
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> list[Neuron]:
         return self.layers[key]
     
 

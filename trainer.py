@@ -13,10 +13,18 @@ class Trainer:
         self.decay: float = decay
         self.softmax: bool = softmax
 
-        if loss.upper() in ['MSE', 'BCE']:
+        if loss.upper() in ['MSE', 'BCE', 'CCE']:
             self.loss: str = loss.upper()
         else:
             raise ValueError("<=> Loss Function [{loss}] is not supported.".format(loss))
+        
+        # {[WARNINGS]}
+        if self.loss == 'BCE' and self.Layers[-1][0].activation != 'sigmoid':
+            print("<=> [WARNING] BCE is used without sigmoid.")
+        if self.loss == 'CCE' and not self.softmax:
+            print("<=> [WARNING] CCE is used without softmax.")
+        if self.softmax and self.Layers[-1][0].activation != 'linear':
+            print("<=> [WARNING] Softmax is used without linear.")
         
     
     def train(self, samples: list[list[float]], actuals: list[list[float]]) -> float:
@@ -40,14 +48,10 @@ class Trainer:
             out: list[float] = t
 
         if self.softmax:
-            if self.Layers[-1][0].activation != 'linear':
-                print("<=> [WARNING] CCE is used without linear.")
-            e = [math.exp(o) for o in out]
-            s = sum(e)
-            out: list[float] = [e[i]/s for i in range(len(e))]
+            out = self.get_softmax(output=out)
 
             for n_i, neuron in enumerate(self.Layers[-1]):
-                neuron.output = out[n_i]
+                neuron.softmax = out[n_i]
 
         return out
     
@@ -84,16 +88,12 @@ class Trainer:
             case 'MSE':
                 deltas: list[float] = [((neuron.output - act)*neuron.slope) for neuron, act in zip(last_layer, actual)]
             case 'BCE':
-                if last_layer[0].activation != 'sigmoid':
-                    print("<=> [WARNING] BCE is used without sigmoid.")
                 deltas: list[float] = [((neuron.output - act)/(neuron.output*(1.0 - neuron.output))*neuron.slope) for neuron, act in zip(last_layer, actual)]
             case 'CCE':
-                if last_layer[0].activation != 'linear':
-                    print("<=> [WARNING] CCE is used without linear.")
-                if not self.softmax:
-                    print("<=> [WARNING] CCE is used without softmax.")
-                # deltas: list[float] = [((-act/neuron.output)*neuron.slope) for neuron, act in zip(last_layer, actual)]
-                raise ValueError("<=> Apologies, CCE isn't supported yet.")
+                if self.softmax:
+                    deltas: list[float] = [(-(act - neuron.softmax)) for neuron, act in zip(last_layer, actual)]
+                else:
+                    deltas: list[float] = [((-act/neuron.output)*neuron.slope) for neuron, act in zip(last_layer, actual)]
         
         return deltas
             
@@ -107,11 +107,26 @@ class Trainer:
                 case 'MSE':
                     loss += (a - o)**2
                 case 'BCE':
-                    loss += -(a*math.log10(o) + (1.0 - a)*math.log10(1 - o))
+                    if o <= 0 or o >= 1:
+                        print("<=> [WARNING] Invalid BCE input:", o)
+                        continue
+                    loss += -(a*math.log(o) + (1.0 - a)*math.log(1 - o))
                 case 'CCE':
-                    raise ValueError("<=> Apologies, CCE isn't supported yet.")
+                    if o <= 0:
+                        print("<=> [WARNING] Invalid CCE input:", o)
+                        continue
+                    loss += -(a*math.log(o))
         
         return loss
+    
+
+    def get_softmax(self, output: list[float]) -> list[float]:
+        m = max(output)
+        e = [math.exp(o - m) for o in output]
+        s = sum(e)
+        output: list[float] = [e[i]/s for i in range(len(e))]
+
+        return output
                 
 
         
