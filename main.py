@@ -7,11 +7,12 @@ from utils import generate_dataset
 
 config_path: str = "NN-TESTING2/config.json"
 data_path: str = "NN-TESTING2/data.json"
+save_path: str = "NN-TESTING2/"
 
 
 file = open("NN-TESTING2/output.txt", 'w')
 for _ in range(1):
-    nn1 = NN(config_path=config_path, data_path=data_path)
+    nn1 = NN(config_path=config_path, data_path=data_path, save_path=save_path)
     t1 = time.time()
     nn1.train()
     t2 = time.time()
@@ -25,5 +26,7 @@ for _ in range(1):
 
     for i in range(len(samples)):
         file.write(f"{samples[i]}  ->  {actuals[i]}  |  {outs[i]}\n")
+
+    nn1.save()
 
 file.close()

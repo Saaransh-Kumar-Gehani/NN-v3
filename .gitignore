@@ -3,6 +3,7 @@
 !config.json
 !data.json
 !model.json
+!neurons.json
 !main.py
 !nn.py
 !neuron.py
