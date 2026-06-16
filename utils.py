@@ -37,14 +37,35 @@ def generate_dataset(data_path: str | None = None, seed: int | None = None, samp
     actuals: list[list[float]] = []
 
     for i in range(sample_size):
-        # x: int = random.uniform(-1, 1)
-        # y: int = random.uniform(-1, 1)
-        # z: int = random.uniform(-1, 1)
+        # x: int = random.uniform(0, 1)
+        # y: int = random.uniform(0, 1)
+        # z: int = random.randint(0, 1)
 
         
-        sample: list[float] = [int(bit) for bit in format(i%256, '08b')]
+        # sample: list[float] = [x, y]
 
-        
+        # MAP = lambda x: [int(x<0.5), int(x>=0.5 and x<1), int(x>=1)]
+
+        # sample: list[float] = [int(bit) for bit in format(i%256, '08b')]
+        # actual: list[float] = [0]*9
+        # actual[sample.count(1)] = 1
+
+
+        centers = [0.0, 1.0, 2.0, 3.0, 4.0]
+
+        x = 4*random.uniform(0, 1)   # [0,1]
+
+        sample: list[float] = [x]
+
+        actual: list[float] = []
+
+        for mu in centers:
+            actual.append(math.exp(-((x - mu)**2)/2))
+
+        s = sum(actual)
+        actual = [a/s for a in actual]
+
+
         # XOR
         # actual: list[float] = [int(not (x == y))]
         # AND
@@ -56,7 +77,7 @@ def generate_dataset(data_path: str | None = None, seed: int | None = None, samp
         # NXOR
         # actual: list[float] = [int(x == y)]
         # Parity
-        actual: list[float] = [1 if sample.count(1)%2 else 0]
+        # actual: list[float] = [1 if sample.count(1)%2 else 0]
 
         samples.append(sample)
         actuals.append(actual)
